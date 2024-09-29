@@ -1,0 +1,59 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id         Int      @id @default(autoincrement())
+  name       String
+  position   String 
+  age        Int
+  gender     String
+  salary     Float
+  startDate  DateTime
+  leaveRequests LeaveRequest[]
+
+  Payroll Payroll[]
+}
+
+model LeaveRequest {
+  id        Int      @id @default(autoincrement())
+  employee  Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  requestDate DateTime
+  reason    String
+  status    String
+}
+
+model Payroll {
+  id        Int      @id @default(autoincrement())
+  employee  Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  baseSalary Float
+  bonus     Float
+  deductions Float
+  totalSalary Float
+}
+model Account {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Session   Session[]  
+}
+
+model Session {
+  token     String   @id
+  accountId Int
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
